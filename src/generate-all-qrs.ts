@@ -11,28 +11,25 @@ const GYM_ID = process.env.GYM_ID; // opcional
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ------------ CONSTANTES GLOBALES DE LAYOUT ------------ //
-const PAGE_MARGIN = 40;
+const PAGE_MARGIN = 35;
 
 const COLS = 3;
-const ROWS = 2;
+const ROWS = 4;
 
-const H_GAP = 20;
-const V_GAP = 20;
+const H_GAP = 12;
+const V_GAP = 12;
 
 // Tamaño útil de la hoja
 const PAGE_WIDTH = 595 - PAGE_MARGIN * 2;
 const PAGE_HEIGHT = 842 - PAGE_MARGIN * 2;
 
-// Calculamos el espacio disponible por tarjeta
+// ahora calculas solo CARD_WIDTH, pero fijas el alto a 230
 const CARD_WIDTH = (PAGE_WIDTH - H_GAP * (COLS - 1)) / COLS;
-const CARD_HEIGHT = (PAGE_HEIGHT - V_GAP * (ROWS - 1)) / ROWS;
+const CARD_HEIGHT = 180; // <-- perfecto para 3 filas
 
 // Ajuste del QR dentro de la tarjeta
-const QR_SIZE = CARD_WIDTH * 0.6; // proporcional
+const QR_SIZE = CARD_WIDTH * 0.72; // proporcional
 // ------------------------------------------- //
-
-// CAMPO REAL DEL CÓDIGO DE 4 DÍGITOS
-const QR_FIELD = "codigo_ingreso";
 
 // Tipo de dato real de los alumnos
 type Member = {
@@ -79,12 +76,34 @@ async function drawQrCard(
     .undash();
 
   // 2. Nombre
-  doc.fontSize(14).text(name, x, y + 10, {
-    width: CARD_WIDTH,
-    align: "center",
-  });
+  // Etiqueta
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(12)
+    .text("Nombre:", x, y + 10, {
+      width: CARD_WIDTH,
+      align: "center",
+    });
 
-  // 3. Generar QR
+  // Nombre en negrita
+  doc
+    .font("Helvetica")
+    .fontSize(12)
+    .text(name, x, y + 23, {
+      width: CARD_WIDTH,
+      align: "center",
+    });
+
+  // 3. Código debajo del nombre
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(12)
+    .text(`Cod. de ingreso: ${code}`, x, y + 47, {
+      width: CARD_WIDTH,
+      align: "center",
+    });
+
+  // 4. Generar QR
   const qrDataUrl = await QRCode.toDataURL(code);
   const base64 = qrDataUrl?.split(",")?.[1];
   if (!base64) {
@@ -93,16 +112,12 @@ async function drawQrCard(
   }
   const qrBuffer = Buffer.from(base64, "base64");
 
-  // 4. QR centrado
-  doc.image(qrBuffer, x + (CARD_WIDTH - QR_SIZE) / 2, y + 50, {
+  // 5. QR centrado debajo del código
+  const qrY = y + 58; // posición vertical ajustada
+
+  doc.image(qrBuffer, x + (CARD_WIDTH - QR_SIZE) / 2, qrY, {
     width: QR_SIZE,
     height: QR_SIZE,
-  });
-
-  // 5. Código
-  doc.fontSize(12).text(`Cod. de ingreso: ${code}`, x, y + CARD_HEIGHT - 40, {
-    width: CARD_WIDTH,
-    align: "center",
   });
 }
 
@@ -126,7 +141,7 @@ async function main() {
   const pdfPath = `pdf/qrs-academia-${GYM_ID}.pdf`;
   const doc = new PDFDocument({
     size: "A4",
-    margin: 40,
+    margin: 35,
   });
 
   doc.pipe(fs.createWriteStream(pdfPath));
