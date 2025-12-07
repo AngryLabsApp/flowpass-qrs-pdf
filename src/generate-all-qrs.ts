@@ -11,17 +11,25 @@ const GYM_ID = process.env.GYM_ID; // opcional
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ------------ CONSTANTES GLOBALES DE LAYOUT ------------ //
-const QR_SIZE = 150;
-const CARD_WIDTH = QR_SIZE + 40;
-const CARD_HEIGHT = QR_SIZE + 110;
+const PAGE_MARGIN = 40;
 
 const COLS = 3;
-const ROWS = 3;
+const ROWS = 2;
 
 const H_GAP = 20;
 const V_GAP = 20;
 
-const PAGE_MARGIN = 40;
+// Tamaño útil de la hoja
+const PAGE_WIDTH = 595 - PAGE_MARGIN * 2;
+const PAGE_HEIGHT = 842 - PAGE_MARGIN * 2;
+
+// Calculamos el espacio disponible por tarjeta
+const CARD_WIDTH = (PAGE_WIDTH - H_GAP * (COLS - 1)) / COLS;
+const CARD_HEIGHT = (PAGE_HEIGHT - V_GAP * (ROWS - 1)) / ROWS;
+
+// Ajuste del QR dentro de la tarjeta
+const QR_SIZE = CARD_WIDTH * 0.6; // proporcional
+// ------------------------------------------- //
 
 // CAMPO REAL DEL CÓDIGO DE 4 DÍGITOS
 const QR_FIELD = "codigo_ingreso";
@@ -79,18 +87,20 @@ async function drawQrCard(
   // 3. Generar QR
   const qrDataUrl = await QRCode.toDataURL(code);
   const base64 = qrDataUrl?.split(",")?.[1];
-  if (!base64) return;
-
+  if (!base64) {
+    console.error(`❌ Error creando QR para ${name}`);
+    return;
+  }
   const qrBuffer = Buffer.from(base64, "base64");
 
   // 4. QR centrado
-  doc.image(qrBuffer, x + (CARD_WIDTH - QR_SIZE) / 2, y + 40, {
+  doc.image(qrBuffer, x + (CARD_WIDTH - QR_SIZE) / 2, y + 50, {
     width: QR_SIZE,
     height: QR_SIZE,
   });
 
   // 5. Código
-  doc.fontSize(12).text(`Cod. de ingreso: ${code}`, x, y + QR_SIZE + 60, {
+  doc.fontSize(12).text(`Cod. de ingreso: ${code}`, x, y + CARD_HEIGHT - 40, {
     width: CARD_WIDTH,
     align: "center",
   });
