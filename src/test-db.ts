@@ -7,23 +7,15 @@ const GYM_ID = process.env.GYM_ID; // opcional
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Tipo de dato real de los alumnos
-type Member = {
-  id: string;
-  full_name: string | null;
-  qr_code: string | null;
-  gym_id: string | null;
-};
-
 // 3. Función para probar la conexión
 async function main() {
   console.log("Conectando a Supabase...");
 
   let query = supabase
     .from("members")
-    .select("id, full_name, gym_id")
-    .order("full_name", { ascending: true })
-    .limit(10);
+    .select("id, full_name, gym_id, created_at")
+    .order("created_at", { ascending: true })
+    .limit(5);
 
   if (GYM_ID) {
     query = query.eq("gym_id", GYM_ID);
