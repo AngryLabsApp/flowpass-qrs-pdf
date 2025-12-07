@@ -45,7 +45,7 @@ async function getMembers(): Promise<Member[]> {
   let query = supabase
     .from("members")
     .select("id, full_name, codigo_ingreso, gym_id, created_at")
-    .eq("estado", "Activo") // Solo alumnos con plan activo
+    .eq("estado", "Inactivo") // Solo alumnos con plan activo
     .is("deleted_at", null) // alumnos que no hayan sido eliminados
     .order("created_at", { ascending: false }); // de mas reciente al mas antiguo
 
@@ -140,7 +140,7 @@ async function main() {
     fs.mkdirSync("pdf");
   }
 
-  const pdfPath = `pdf/qrs-academia-${GYM_ID}-ACTIVO.pdf`;
+  const pdfPath = `pdf/qrs-academia-${GYM_ID}-INACTIVO.pdf`;
   const doc = new PDFDocument({
     size: "A4",
     margin: 35,
