@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:db": "ts-node src/test-db.ts",
-    "qr:generate:all": "ts-node src/generate-all-qrs.ts",
+    "qr:generate:all:activo": "ts-node src/generate-all-qrs-activo.ts",
     "qr:generate:all:inactivo": "ts-node src/generate-all-qrs-inactivo.ts",
     "qr:generate:each": "ts-node src/generate-qr-each.ts",
     "qr:generate:selected": "ts-node src/generate-selected-qrs.ts"
