@@ -7,41 +7,43 @@ const GYM_ID = process.env.GYM_ID; // opcional
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// CAMPO REAL DEL CÓDIGO DE 4 DÍGITOS
+const QR_FIELD = "codigo_ingreso";
+
 // Tipo de dato real de los alumnos
 type Member = {
   id: string;
   full_name: string | null;
-  qr_code: string | null;
+  codigo_ingreso: string | null;
   gym_id: string | null;
+  created_at: string | null;
 };
 
-// 3. Función para probar la conexión
-async function main() {
-  console.log("Conectando a Supabase...");
-
+// 1. Obtener alumnos
+async function getMembers(): Promise<Member[]> {
   let query = supabase
     .from("members")
-    .select("id, full_name, gym_id")
-    .order("full_name", { ascending: true })
-    .limit(10);
+    .select("id, full_name, codigo_ingreso, gym_id, created_at")
+    .order("created_at", { ascending: true });
 
   if (GYM_ID) {
     query = query.eq("gym_id", GYM_ID);
   }
 
   const { data, error } = await query;
-
   if (error) {
-    console.error("❌ ERROR consultando Supabase:", error.message);
-    return;
+    console.error("❌ Error obteniendo alumnos:", error.message);
+    process.exit(1);
   }
+  return data as Member[];
+}
 
-  console.log(`✅ Conexión OK. Miembros encontrados: ${data?.length}`);
-  console.log("Primeros resultados:");
+async function main() {
+  console.log("📡 Obteniendo alumnos...");
 
-  data?.forEach((m) => {
-    console.log(`- ${m.id} | ${m.full_name} | gym_id=${m.gym_id}`);
-  });
+  const members = await getMembers();
+
+  console.log(`Encontrados ${members.length} alumnos.`);
 }
 
 main();
