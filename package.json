@@ -9,5 +9,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@10.20.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
+    "dotenv": "^17.2.3",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
 }
