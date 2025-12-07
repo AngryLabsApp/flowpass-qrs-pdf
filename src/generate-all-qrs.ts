@@ -45,7 +45,9 @@ async function getMembers(): Promise<Member[]> {
   let query = supabase
     .from("members")
     .select("id, full_name, codigo_ingreso, gym_id, created_at")
-    .order("created_at", { ascending: false });
+    .eq("estado", "Activo") // Solo alumnos con plan activo
+    .is("deleted_at", null) // alumnos que no hayan sido eliminados
+    .order("created_at", { ascending: false }); // de mas reciente al mas antiguo
 
   if (GYM_ID) {
     query = query.eq("gym_id", GYM_ID);
