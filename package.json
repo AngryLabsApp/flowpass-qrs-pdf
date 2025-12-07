@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test:db": "ts-node src/test-db.ts",
-    
     "qr:generate:all": "ts-node src/generate-all-qrs.ts",
     "qr:generate:each": "ts-node src/generate-qr-each.ts",
     "qr:generate:selected": "ts-node src/generate-selected-qrs.ts"
@@ -22,6 +21,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "@types/pdfkit": "^0.17.4",
+    "@types/qrcode": "^1.5.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
